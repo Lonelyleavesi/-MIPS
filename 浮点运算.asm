@@ -116,7 +116,7 @@ floatAdd:			#浮点数加法
 
 	add    $s1, $s2,$0		#s1用于储存最后的答案0001 110000 表示1.11
 	j		floatResultSave		# jump to floatResultSave
-	
+########################################################################################################################################
 floatSub:			#浮点数减法
 	lw	 	$t1, num1($0)		# 取出第一个数
 	lw	 	$t2, num2($0)		# 取出第二个数
@@ -136,9 +136,74 @@ sub2s1:
 	sub		$s1, $t2, $t3		#num2 - num1
 	sll		$s1,$s1,3
 	j		floatResultSave		# jump to floatResultSave
-	
-floatMul:			#浮点数乘法
-	sw		$s1,result($0)
+#######################################################################################################################################
+floatMul:			#浮点数乘法 通过找出两个数的小数位数，x位小数乘y位小数 结果应为x+y位小数（x+y < 6）然后左移6-(x+y)位
+	addi	$t1,$0,0
+	lw	 	$s2, num1($t1)		# 取出第一个数的整体
+	lw	 	$s3, num2($t1)		# 取出第二个数的整体
+
+	addi	$t1,$0,8
+	lw	 	$s4, num1($t1)		# 取出第一个数的小数部分
+	lw	 	$s5, num2($t1)		# 取出第二个数的小数部
+
+	j		loop_decimalNumber1
+
+decimalNumber1:			#找出num1后小数点有几位
+	addi 	$t1,$0,0x1			#小数点后第三位
+	andi	$t4,$s4,$t1			#判断小数部分第三位有没有1 如果有就代表小数有3位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num1have3	#如果t4=1
+
+	addi 	$t1,$0,0x2			#小数点后第二位
+	andi	$t4,$s4,$t1			#判断小数部分第二位有没有1 如果有就代表小数有2位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num1have2	#如果t4=1
+
+	addi 	$t1,$0,0x4			#小数点后第一位
+	andi	$t4,$s4,$t1			#判断小数部分第一位有没有1 如果有就代表小数有1位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num1have1	#如果t4=1
+
+num1have3:
+	addi    $s4, $0,3
+	j		decimalNumber2
+num1have2:
+	addi    $s4, $0,2
+	j		decimalNumber2
+num1have1:
+	addi    $s4, $0,1
+	j		decimalNumber2
+
+decimalNumber2:			#找出num1后小数点有几位
+	addi 	$t1,$0,0x1			#小数点后第三位
+	andi	$t4,$s5,$t1			#判断小数部分第三位有没有1 如果有就代表小数有3位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num2have3	#如果t4=1
+
+	addi 	$t1,$0,0x2			#小数点后第二位
+	andi	$t4,$s5,$t1			#判断小数部分第二位有没有1 如果有就代表小数有2位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num2have2	#如果t4=1
+
+	addi 	$t1,$0,0x4			#小数点后第一位
+	andi	$t4,$s5,$t1			#判断小数部分第一位有没有1 如果有就代表小数有1位
+	addi	$t5,$0,1
+	beq		$t5,$t4,num2have1	#如果t4=1
+
+num2have3:
+	addi    $s5, $0,3
+	j		fMulfunction
+num2have2:
+	addi    $s5, $0,2
+	j		fMulfunction
+num2have1:
+	addi    $s5, $0,1
+	j		fMulfunction
+
+fMulfunction:	#经过上面的处理，s4中存的num1的小数点后位数 s5中存的num2小数点后位数
+
+
+###############################################################################################################################################
 floatDiv:			#浮点数除法
 	sw		$s1,result($0)
 ######################################################################################################################
