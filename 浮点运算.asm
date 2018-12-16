@@ -158,12 +158,12 @@ decimalNumber1:			#找出num1后小数点有几位
 
 	addi 	$t1,$0,0x2			#小数点后第二位
 	andi	$t4,$s4,$t1			#判断小数部分第二位有没有1 如果有就代表小数有2位
-	addi	$t5,$0,1
+	addi	$t5,$0,2
 	beq		$t5,$t4,num1have2	#如果t4=1
 
 	addi 	$t1,$0,0x4			#小数点后第一位
 	andi	$t4,$s4,$t1			#判断小数部分第一位有没有1 如果有就代表小数有1位
-	addi	$t5,$0,1
+	addi	$t5,$0,4
 	beq		$t5,$t4,num1have1	#如果t4=1
 
 num1have3:
