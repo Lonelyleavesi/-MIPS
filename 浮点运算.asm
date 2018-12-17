@@ -98,13 +98,60 @@ choseOP:
 ##############################################################################################################################
 
 intAdd:			#整数加法
-	sw		$s1,result($0)
+	lw		$t1, num1($0)
+	lw		$t2, num2($0)
+	add 	$s1, $t1, $t2
+	j  		resultSave
+
 intSub:			#整数减法
-	sw		$s1,result($0)
-intMul:			#整数乘法
-	sw		$s1,result($0)
-intDiv:			#整数除法
-	sw		$s1,result($0)
+	lw		$t1, num1($0)
+	lw		$t2, num2($0)
+	slt		$t3, $t1, $t2   		#如果num1 < num2则将$t3置为1
+	addi  	$t4, $0, 1				#$t4置为1，方便后面判断
+	beq		$t4, $t3, intSub21		#如果$t3 == 1，则跳转到in	tSub21
+	sub  	$s1, $t1, $t2
+	j 		resultSave
+
+intSub21:		#被减数和减数交换后相减
+	lw		$t1, num1($0)
+	lw		$t2, num2($0)
+	sub  	$s1, $t2, $t1
+	j 		resultSave
+
+intMulInit:			#整数乘法
+	lw		$t1, num2($0) 
+	add 	$s2, $0, $t1       		#把num2的值赋值给s2
+	add 	$s1, $0, $0				#将结果初始化为0
+	beq 	$s2, $0, resultSave 	#判断乘数是否为0，是则跳转到结果输出0，否则就执行后面的乘法操作
+
+intMult:
+	lw		$t1, num1($0)			#取出第一个数
+	lw		$t2, num2($0)			#取出第二个数
+	addi 	$t3, $0, 1				#将$t3置为1，方便后面判断
+	add 	$s1, $s1, $t1     	 	#进行累加操作
+	sub 	$s2, $s2, $t3 			#将乘数减一
+	bne		$0, $s2, intMult  		#判断乘数是否0，否则再次执行intMult，否则就输出结果
+	j 		resultSave
+
+
+intDivInit:			#整数除法
+	add  	$s1, $0, $0				#初始化$s1为0
+	lw 		$t1, num1($0)			#取出第一个数
+	lw		$t2, num2($0)			#取出第二个数
+	slt		$t3, $t1, $t2 			#判断被除数是否小于除数，是则置为1，否则为0
+	addi	$t4, $0, 1				#将$t4置为1，方便后面判断
+	beq		$t3, $t4, resultSave 	#如果被除数小于除数，则直接输出结果
+	beq 	$t2, $0, resultSave  	#如果除数为0，则直接输出结果
+
+intDiv:
+	sub 	$t1, $t1, $t2 			#进行累减操作
+	addi 	$s1, $s1, 1 			#每减一次则结果加一
+	slt 	$t3, $t1, $t2  			#判断被除数是否小于除数，是则置为1，否则为0
+	addi 	$t4, $0, 1
+	beq		$t3, $t4, resultSave 	#如果被除数小于除数，则直接输出结果
+	j 		intDiv
+
+
 ##############################################################################################################################
 floatAdd:			#浮点数加法
 	#led 需要用到10位，4位整数部分，6位小数部分
