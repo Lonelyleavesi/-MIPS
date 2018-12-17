@@ -277,9 +277,9 @@ floatDiv:			#浮点数除法
 	lw	 	$s2, num1($0)		# 取出第一个数的整体   取出来的是5位二进制数
 	lw	 	$s3, num2($0)		# 取出第二个数的整体
 	beq		$s3,$0,num2is0		#!!!!除数为0  直接退出 结果为0
-	addi	$s4,$s0,$0
+	addi	$s4,$s0,0
 	#addi	$s5,$s0,$0
-	addi	$s6,$s0,$0
+	addi	$s6,$s0,0
 
 divLoop:	#除法循环
 	beq		$s2,$0,endDiv		#如果s2 = 0 则除尽
