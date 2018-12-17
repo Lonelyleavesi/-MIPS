@@ -302,10 +302,10 @@ divLoop:	#除法循环
 
 
 sllS2:	#s2左移一位 s6+1
-	addi 	$t2,$0,5		#结果已经左移至少6位 表示已经有6位小数了则结束除法
+	addi 	$t2,$0,5		#结果已经左移至少6位 表示已经有6位小数了则结束除法x
 	addi	$t3,$0,1
 	slt		$t1,$t2,$s6
-	beq		$t1,$t3,endDiv
+	beq		$t1,$t3, endDiv
 
 	sll 	$s2,$s2,1		
 	sll		$s4,$s4,1		#商也要左移 一位
