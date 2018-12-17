@@ -79,10 +79,10 @@ choseOP:
 	beq   	$t1,$t2,intSub		#整数减法
 	
 	addi	$t2,$0,2
-	beq    	$t1,$t2,intMult		#整数乘法
+	beq    	$t1,$t2,intMulInit	#整数乘法
 
 	addi	$t2,$0,3
-	beq    	$t1,$t2,intSub		#整数除法
+	beq    	$t1,$t2,intDivInit		#整数除法
 
 	addi	$t2,$0,4
 	beq    	$t1,$t2,floatAdd		#浮点数加法
@@ -310,12 +310,12 @@ sllS2:	#s2左移一位 s6+1
 endDiv:		#用于处理结果 把s4 s5 存到 s1
 	addi	$t1,$0,6
 	sub		$t2,$t1,$s6				#t2表示左移的位数 6-x
-	sllv    $s1, $s4,$t2
+	sllv    $s4, $s4,$t2
+	add		$s1,$0,$s4
 	j       floatResultSave
 ######################################################################################################################
 resultSave:		#储存结果到Led里面
-	or		$t1,$s1,$s7 	#把结果和 表示浮点运算的flag 放到一起，用于传参数判断是否为浮点运算
-	sw		$t1,0xC60($s0)  
+	sw		$s1,0xC60($s0)  
 	j 		start			#传递完后重新开始
 floatResultSave:
 	or		$t1,$s1,$s7 	#把结果和 表示浮点运算的flag 放到一起，用于传参数是否为浮点运算
