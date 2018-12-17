@@ -79,7 +79,7 @@ choseOP:
 	beq   	$t1,$t2,intSub		#整数减法
 	
 	addi	$t2,$0,2
-	beq    	$t1,$t2,intMul		#整数乘法
+	beq    	$t1,$t2,intMult		#整数乘法
 
 	addi	$t2,$0,3
 	beq    	$t1,$t2,intSub		#整数除法
