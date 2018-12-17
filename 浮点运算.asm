@@ -281,6 +281,7 @@ floatDiv:			#浮点数除法
 	addi	$s4,$s0,0
 	#addi	$s5,$s0,$0
 	addi	$s6,$s0,0
+	j		divLoop
 
 divLoop:	#除法循环
 	beq		$s2,$0,endDiv		#如果s2 = 0 则除尽
