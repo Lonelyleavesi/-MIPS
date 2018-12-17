@@ -79,10 +79,10 @@ choseOP:
 	beq   	$t1,$t2,intSub		#整数减法
 	
 	addi	$t2,$0,2
-	beq    	$t1,$t2,intMul		#整数乘法
+	beq    	$t1,$t2,intMulInit	#整数乘法
 
 	addi	$t2,$0,3
-	beq    	$t1,$t2,intSub		#整数除法
+	beq    	$t1,$t2,intDivInit		#整数除法
 
 	addi	$t2,$0,4
 	beq    	$t1,$t2,floatAdd		#浮点数加法
@@ -119,9 +119,11 @@ intSub21:		#被减数和减数交换后相减
 	j 		resultSave
 
 intMulInit:			#整数乘法
+
 	lw		$t1, num2($0) 
 	add 	$s2, $0, $t1       		#把num2的值赋值给s2
 	add 	$s1, $0, $0				#将结果初始化为0
+
 	beq 	$s2, $0, resultSave 	#判断乘数是否为0，是则跳转到结果输出0，否则就执行后面的乘法操作
 
 intMult:
@@ -277,9 +279,10 @@ floatDiv:			#浮点数除法
 	lw	 	$s2, num1($0)		# 取出第一个数的整体   取出来的是5位二进制数
 	lw	 	$s3, num2($0)		# 取出第二个数的整体
 	beq		$s3,$0,num2is0		#!!!!除数为0  直接退出 结果为0
-	addi	$s4,$s0,$0
+	addi	$s4,$0,0
 	#addi	$s5,$s0,$0
-	addi	$s6,$s0,$0
+	addi	$s6,$0,0
+	j		divLoop
 
 divLoop:	#除法循环
 	beq		$s2,$0,endDiv		#如果s2 = 0 则除尽
@@ -291,15 +294,19 @@ divLoop:	#除法循环
 	sub		$s2,$s2,$s3
 	addi	$s4,$s4,1
 	
-	addi 	$t2,$0,6		#结果已经左移6位 表示已经有6位小数了则结束除法
-	beq		$s6,$t2,endDiv
+	addi 	$t2,$0,5		#结果已经左移至少6位（到6就停） 表示已经有6位小数了则结束除法
+	addi	$t3,$0,1
+	slt		$t1,$t2,$s6
+	beq		$t1,$t3,endDiv
 
 	j		divLoop
 
 
 sllS2:	#s2左移一位 s6+1
-	addi 	$t2,$0,6		#结果已经左移6位 表示已经有6位小数了则结束除法
-	beq		$s6,$t2,endDiv
+	addi 	$t2,$0,5		#结果已经左移至少6位 表示已经有6位小数了则结束除法x
+	addi	$t3,$0,1
+	slt		$t1,$t2,$s6
+	beq		$t1,$t3, endDiv
 
 	sll 	$s2,$s2,1		
 	sll		$s4,$s4,1		#商也要左移 一位
@@ -310,12 +317,12 @@ sllS2:	#s2左移一位 s6+1
 endDiv:		#用于处理结果 把s4 s5 存到 s1
 	addi	$t1,$0,6
 	sub		$t2,$t1,$s6				#t2表示左移的位数 6-x
-	sllv    $s1, $s4,$t2
+	sllv    $s4, $s4,$t2
+	add		$s1,$0,$s4
 	j       floatResultSave
 ######################################################################################################################
 resultSave:		#储存结果到Led里面
-	or		$t1,$s1,$s7 	#把结果和 表示浮点运算的flag 放到一起，用于传参数判断是否为浮点运算
-	sw		$t1,0xC60($s0)  
+	sw		$s1,0xC60($s0)  
 	j 		start			#传递完后重新开始
 floatResultSave:
 	or		$t1,$s1,$s7 	#把结果和 表示浮点运算的flag 放到一起，用于传参数是否为浮点运算
