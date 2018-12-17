@@ -119,9 +119,10 @@ intSub21:		#被减数和减数交换后相减
 	j 		resultSave
 
 intMulInit:			#整数乘法
-	lw		$t1, num2($0) 
+
+	lw	$t1, num2($0) 
 	add 	$s2, $0, $t1       		#把num2的值赋值给s2
-	add 	$s1, $0, $0				#将结果初始化为0
+	addi 	$s1, $0, 0				#将结果初始化为0
 	beq 	$s2, $0, resultSave 	#判断乘数是否为0，是则跳转到结果输出0，否则就执行后面的乘法操作
 
 intMult:
