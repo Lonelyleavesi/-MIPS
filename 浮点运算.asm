@@ -293,15 +293,19 @@ divLoop:	#除法循环
 	sub		$s2,$s2,$s3
 	addi	$s4,$s4,1
 	
-	addi 	$t2,$0,6		#结果已经左移6位 表示已经有6位小数了则结束除法
-	beq		$s6,$t2,endDiv
+	addi 	$t2,$0,5		#结果已经左移至少6位（到6就停） 表示已经有6位小数了则结束除法
+	addi	$t3,$0,1
+	slt		$t1,$t2,$s6
+	beq		$t1,$t3,endDiv
 
 	j		divLoop
 
 
 sllS2:	#s2左移一位 s6+1
-	addi 	$t2,$0,6		#结果已经左移6位 表示已经有6位小数了则结束除法
-	beq		$s6,$t2,endDiv
+	addi 	$t2,$0,5		#结果已经左移至少6位 表示已经有6位小数了则结束除法
+	addi	$t3,$0,1
+	slt		$t1,$t2,$s6
+	beq		$t1,$t3,endDiv
 
 	sll 	$s2,$s2,1		
 	sll		$s4,$s4,1		#商也要左移 一位
